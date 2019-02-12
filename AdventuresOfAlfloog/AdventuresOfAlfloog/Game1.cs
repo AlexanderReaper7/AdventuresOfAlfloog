@@ -33,7 +33,6 @@ namespace AdventuresOfAlfloog
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
 
             base.Initialize();
         }
@@ -47,7 +46,6 @@ namespace AdventuresOfAlfloog
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -56,7 +54,6 @@ namespace AdventuresOfAlfloog
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
         /// <summary>
@@ -70,7 +67,6 @@ namespace AdventuresOfAlfloog
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -83,7 +79,6 @@ namespace AdventuresOfAlfloog
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
