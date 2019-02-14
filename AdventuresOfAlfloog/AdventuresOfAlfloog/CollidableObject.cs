@@ -13,7 +13,7 @@ namespace AdventuresOfAlfloog
         /// <summary>
         ///     The current position of the object on screen
         /// </summary>
-        public Vector2 Position;
+        public Vector2 Position; // TODO: change these fields to properties
 
         /// <summary>
         ///     rectangle of the frame in the sprite sheet 
@@ -23,12 +23,12 @@ namespace AdventuresOfAlfloog
         /// <summary>
         ///     The origin of the object, by default this is the center point of the sourceRectangle.
         /// </summary>
-        public Vector2 origin;
+        public Vector2 Origin;
 
         /// <summary>
         ///     The rotation factor
         /// </summary>
-        public float rotation;
+        private float rotation;
 
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace AdventuresOfAlfloog
         /// <summary>
         ///     A Matrix based on the current rotation and position.
         /// </summary>
-        private Matrix Transform => Matrix.CreateTranslation(new Vector3(-origin, 0.0f)) * Matrix.CreateRotationZ(Rotation) * Matrix.CreateTranslation(new Vector3(Position, 0.0f));
+        private Matrix Transform => Matrix.CreateTranslation(new Vector3(-Origin, 0.0f)) * Matrix.CreateRotationZ(Rotation) * Matrix.CreateTranslation(new Vector3(Position, 0.0f));
 
         /// <summary>
         ///     An axis aligned rectangle which fully contains an arbitrarily transformed axis aligned rectangle.
@@ -120,7 +120,7 @@ namespace AdventuresOfAlfloog
             
             Texture = texture;
             // Create a new origin 
-            origin = new Vector2(SourceRectangle.Width / 2, SourceRectangle.Height / 2); // texture.X / SourceRectangle.x = number of frames
+            Origin = new Vector2(SourceRectangle.Width / 2, SourceRectangle.Height / 2); // texture.X / SourceRectangle.x = number of frames
             // Set size of TextureData
             TextureData = new Color[texture.Width, texture.Height];
             // Get texture data 
@@ -147,7 +147,7 @@ namespace AdventuresOfAlfloog
         public void LoadTexture(Texture2D texture, Vector2 origin)
         {
             LoadTexture(texture);
-            this.origin = origin;
+            this.Origin = origin;
         }
 
         /// <summary>
@@ -220,9 +220,10 @@ namespace AdventuresOfAlfloog
                     if (sourceB.X <= xB && xB < sourceB.Width + sourceB.X && sourceB.Y <= yB && yB < sourceB.Height + sourceB.Y)
                     {
                         // Get the colors of the overlapping pixels
-                        Color colorA = dataA[xA, yA];
-                        Color colorB = dataB[xB, yB];
-
+                        // and wrap coordinates to prevent index going out of range
+                        Color colorA = dataA[xA % dataA.GetLength(0), yA % dataA.GetLength(1)];
+                        Color colorB = dataB[xB % dataB.GetLength(0), yB % dataB.GetLength(1)];
+                        
                         // If both pixels are not completely transparent,
                         if (colorA.A != 0 && colorB.A != 0)
                         {

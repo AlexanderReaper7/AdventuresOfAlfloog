@@ -20,7 +20,7 @@ namespace AdventuresOfAlfloog
                 _position = value;
 
                 // If there's a limit set and the camera is not transformed clamp position to limits TODO: make position limiting work with zoom and rotation
-                if (Limits != null && Zoom == 1.0f && Rotation == 0.0f)
+                if (Limits != null)
                 {
                     _position.X = MathHelper.Clamp(_position.X, Limits.Value.X, Limits.Value.X + Limits.Value.Width - _viewport.Width);
                     _position.Y = MathHelper.Clamp(_position.Y, Limits.Value.Y, Limits.Value.Y + Limits.Value.Height - _viewport.Height);
@@ -73,14 +73,17 @@ namespace AdventuresOfAlfloog
         /// </summary>
         public Vector2 ZoomedOrigin => Origin / Zoom;
 
+
         public Camera2D(Viewport viewport)
         {
-            Origin = new Vector2(_viewport.Width / 2.0f, _viewport.Height / 2.0f);
+            Origin = new Vector2(viewport.Width / 2.0f, viewport.Height / 2.0f);
             Zoom = 1f;
             Position = Vector2.Zero;
             Rotation = 0f;
             _viewport = viewport;
         }
+
+
 
         /// <summary>
         /// Returns the view matrix
@@ -89,6 +92,7 @@ namespace AdventuresOfAlfloog
         public Matrix GetViewMatrix()
         {
                 return Matrix.CreateTranslation(new Vector3(-Position, 0.0f)) *
+                       Matrix.CreateTranslation(new Vector3(-Origin, 0.0f)) *
                        Matrix.CreateRotationZ(Rotation) *
                        Matrix.CreateScale(Zoom, Zoom, 1) *
                        Matrix.CreateTranslation(new Vector3(Origin, 0.0f));
@@ -109,6 +113,8 @@ namespace AdventuresOfAlfloog
                    Matrix.CreateTranslation(new Vector3(Origin, 0.0f));
         }
 
+
+
         /// <summary>
         /// Transforms a Vector2 with the view matrix
         /// </summary>
@@ -120,16 +126,6 @@ namespace AdventuresOfAlfloog
         }
 
         /// <summary>
-        /// Transforms a Vector2 with the inverted view matrix
-        /// </summary>
-        /// <param name="screenPosition"></param>
-        /// <returns></returns>
-        public Vector2 ScreenToWorld(Vector2 screenPosition)
-        {
-            return Vector2.Transform(screenPosition, Matrix.Invert(GetViewMatrix()));
-        }
-
-        /// <summary>
         /// Transforms a Vector2 with the view matrix and parallax scaling
         /// </summary>
         /// <param name="worldPosition"></param>
@@ -137,6 +133,16 @@ namespace AdventuresOfAlfloog
         public Vector2 WorldToScreen(Vector2 worldPosition, Vector2 parallax)
         {
             return Vector2.Transform(worldPosition, GetViewMatrix(parallax));
+        }
+
+        /// <summary>
+        /// Transforms a Vector2 with the inverted view matrix
+        /// </summary>
+        /// <param name="screenPosition"></param>
+        /// <returns></returns>
+        public Vector2 ScreenToWorld(Vector2 screenPosition)
+        {
+            return Vector2.Transform(screenPosition, Matrix.Invert(GetViewMatrix()));
         }
 
         /// <summary>

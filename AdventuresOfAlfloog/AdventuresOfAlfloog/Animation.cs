@@ -35,15 +35,15 @@ namespace AdventuresOfAlfloog
             this.FrameTime = frameTime;
         }
     }
-    // When craeting animations it goes in order of AnimationStates + AnimationDirections
+    // When creating animations it goes in order of AnimationStates + AnimationDirections
     public enum AnimationStates
     {
-        Idle, Walk, Action1, Action2, Action3, Action4
+        Idle, Walk, Attack
     }
 
     public enum AnimationDirections
     {
-        Up, Down, Left, Right
+        Left, Right
     }
 
     /// <summary>

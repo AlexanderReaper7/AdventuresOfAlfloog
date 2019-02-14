@@ -19,6 +19,10 @@ namespace AdventuresOfAlfloog
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+#if DEBUG
+        public static SpriteFont DebugFont;
+#endif
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -33,6 +37,11 @@ namespace AdventuresOfAlfloog
         /// </summary>
         protected override void Initialize()
         {
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferMultiSampling = true;
+            graphics.ApplyChanges();
+            IsFixedTimeStep = false;
 
             base.Initialize();
         }
@@ -45,6 +54,12 @@ namespace AdventuresOfAlfloog
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+#if DEBUG
+            DebugFont = Content.Load<SpriteFont>(@"Fonts/Debug");
+#endif
+
+            InGame.LoadContent(Content, GraphicsDevice.Viewport);
 
         }
 
@@ -64,9 +79,16 @@ namespace AdventuresOfAlfloog
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.End))
                 this.Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.F))
+            {
+                graphics.IsFullScreen = !graphics.IsFullScreen;
+                graphics.ApplyChanges();
+            }
+
+            InGame.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -77,8 +99,9 @@ namespace AdventuresOfAlfloog
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
+            InGame.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }

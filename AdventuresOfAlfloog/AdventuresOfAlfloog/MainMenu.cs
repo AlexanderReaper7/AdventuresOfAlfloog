@@ -54,11 +54,6 @@ namespace AdventuresOfAlfloog
         public static void Draw(SpriteBatch spriteBatch)
         {
             _menu.Draw(spriteBatch);
-#if DEBUG
-            spriteBatch.Begin();
-            //spriteBatch.DrawString(Game1.DebugFont, $"{}");
-            spriteBatch.End();
-#endif
         }
     }
 }
