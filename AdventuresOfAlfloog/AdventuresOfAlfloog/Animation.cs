@@ -93,8 +93,26 @@ namespace AdventuresOfAlfloog
         /// <param name="frames">List of frames to create an animation with</param>
         public Animation(List<Frame> frames)
         {
-            this._frames = frames;
             AnimationName = "";
+            this._frames = frames;
+        }
+
+        /// <summary>
+        /// Creates a simple animation with uniform frame sizes and x axis animation direction
+        /// </summary>
+        /// <param name="animationName">Identifier string</param>
+        /// <param name="sourceRectangle">start position and size of source rectangle</param>
+        /// <param name="frames">number of frames</param>
+        /// <param name="frametime">time between each frame</param>
+        public Animation(string animationName, Rectangle sourceRectangle, int frames, int frametime)
+        {
+            AnimationName = animationName;
+
+            _frames  = new List<Frame>(frames);
+            for (int i = 0; i < frames; i++)
+            {
+                _frames.Add(new Frame(new Rectangle(sourceRectangle.X + (i * sourceRectangle.Width), sourceRectangle.Y, sourceRectangle.Width, sourceRectangle.Height), frametime));
+            }
         }
 
         /// <summary>
@@ -204,17 +222,17 @@ namespace AdventuresOfAlfloog
         /// Instantiates a new AnimationSet with a list of animations and initial state and direction
         /// </summary>
         /// <param name="animations"></param>
-        /// <param name="animationState"></param>
+        /// <param name="initialState"></param>
         /// <param name="initialDirection"></param>
-        public AnimationSet(List<Animation> animations, AnimationStates animationState, AnimationDirections initialDirection)
+        public AnimationSet(List<Animation> animations, AnimationStates initialState, AnimationDirections initialDirection)
         {
             Animations = animations;
-            AnimationState = animationState;
+            AnimationState = initialState;
             AnimationDirection = initialDirection;
         }
 
         /// <summary>
-        /// Animate the current animation
+        /// Animate the current animation with origin
         /// </summary>
         /// <param name="sourceRectangle"></param>
         /// <param name="origin"></param>
@@ -231,5 +249,24 @@ namespace AdventuresOfAlfloog
                 animation.Reset();
             }
         }
+
+        /// <summary>
+        /// Animate the current animation without origin
+        /// </summary>
+        /// <param name="sourceRectangle"></param>
+        /// <param name="gameTime">Time since last update</param>
+        public void UpdateAnimation(ref Rectangle sourceRectangle, GameTime gameTime)
+        {
+            // Animate CurrentAnimation
+            CurrentAnimation.Animate(ref sourceRectangle, gameTime);
+
+            // Reset all other animations except from the CurrentAnimation
+            foreach (Animation animation in Animations)
+            {
+                if (ReferenceEquals(animation, CurrentAnimation)) { return; }
+                animation.Reset();
+            }
+        }
+
     }
 }

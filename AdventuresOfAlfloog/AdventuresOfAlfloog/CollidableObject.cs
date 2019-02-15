@@ -87,6 +87,8 @@ namespace AdventuresOfAlfloog
         /// </summary>
         public Rectangle BoundingRectangle => CalculateBoundingRectangle(new Rectangle(0,0, SourceRectangle.Width, SourceRectangle.Height), Transform);
 
+        public Rectangle Rectangle => new Rectangle((int)Position.X, (int)Position.Y, SourceRectangle.Width, SourceRectangle.Height);
+
         /// <summary>
         ///     Detects a pixel level collision between this and an other CollidableObject.
         /// </summary>

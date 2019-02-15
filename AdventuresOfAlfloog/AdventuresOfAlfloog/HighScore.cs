@@ -33,19 +33,16 @@ namespace AdventuresOfAlfloog
     [Serializable]
     public struct SaveData
     {
-        public List<HighScoreEntry> CampaingScores;
-        public List<HighScoreEntry> EndlessScores;
+        public List<HighScoreEntry> ScoreEntries;
 
-        public SaveData(List<HighScoreEntry> newCampaingScoreEntries, List<HighScoreEntry> newEndlessScores)
+        public SaveData(List<HighScoreEntry> scoreEntries)
         {
-            CampaingScores = newCampaingScoreEntries;
-            EndlessScores = newEndlessScores;
+            ScoreEntries = scoreEntries;
         }
 
         public static SaveData GenerateDefaultSaveData()
         {
             return new SaveData(
-                new List<HighScoreEntry>(5) {HighScoreEntry.GenerateDefaultHighScoreEntry()},
                 new List<HighScoreEntry>(5) {HighScoreEntry.GenerateDefaultHighScoreEntry()});
         }
     }
@@ -53,17 +50,30 @@ namespace AdventuresOfAlfloog
     
     public static class HighScore
     {
-        private enum ShowScoreStates
+        private enum letters
         {
-            Campaing,
-            Endless
+            A, B, C,
+            D, E, F,
+            G, H, I,
+            J, K, L,
+            M, N, O,
+            P, Q, R,
+            S, T, U,
+            V, W, X,
+            Y, Z, Å,
+            Ä, Ö,
         }
 
-        private static ShowScoreStates showScoreState = ShowScoreStates.Campaing;
+        private static int letter1;
+        private static int letter2;
+        private static int letter3;
+        public static int Letters1 { get { return letter1; } set { letter1 = value % 29; } }
+        public static int Letters2 { get { return letter2; } set { letter2 = value % 29; } }
+        public static int Letters3 { get { return letter3; } set { letter3 = value % 29; } }
 
-        private static Menu menu;
+        private static Menu _menu;
         private static Viewport _viewport;
-        private static SpriteFont scoreFont;
+        private static SpriteFont _scoreFont;
 
         private const string FileName = "save.dat";
 
@@ -85,38 +95,62 @@ namespace AdventuresOfAlfloog
 
         public static void LoadContent(ContentManager content, Viewport viewport)
         {
+            Texture2D buttonRelease = content.Load<Texture2D>(@"Textures/Menu/backButton");
+            Texture2D buttonPressed = content.Load<Texture2D>(@"Textures/Menu/backButtonPressed");
+
             // Create a new menu
-            menu = new Menu(content.Load<Texture2D>(@"Textures/Menu/MainMenuBackground"),
+            _menu = new Menu(content.Load<Texture2D>(@"Textures/Menu/MainMenuBackground"),
                 new Button[]
                 {
                     // Back button
                     new Button(new Point(0,0),
-                        new Rectangle(100,100,50,50),
-                        content.Load<Texture2D>(@"Textures/Menu/Button1"),
-                        content.Load<Texture2D>(@"Textures/Menu/Menu0_button1"),
-                        () => Game1.CurrentGameState = Game1.GameState.MainMenu),
-                    // Show camping scores
-                    new Button(new Point(0,1),
-                        new Rectangle(100, 400, 100, 50),
-                        content.Load<Texture2D>(@"Textures/Menu/Button1"),
-                        content.Load<Texture2D>(@"Textures/Menu/Menu0_button1"),
-                        () => showScoreState = ShowScoreStates.Campaing),
-                    // Show Endless scores
-                    new Button(new Point(0,2),
-                        new Rectangle(100, 500, 100, 50),
-                        content.Load<Texture2D>(@"Textures/Menu/Button1"),
-                        content.Load<Texture2D>(@"Textures/Menu/Menu0_button1"),
-                        () => showScoreState = ShowScoreStates.Endless),
+                        new Rectangle(100,100,200,50),
+                        content.Load<Texture2D>(@"Textures/Menu/backButton"),
+                        content.Load<Texture2D>(@"Textures/Menu/backButtonPressed"),
+                        () => Game1.GameState = Game1.GameStates.MainMenu),
+                    // Letter 1
+                    new Button(new Point(1,0),
+                        new Rectangle(150,150,50,50),
+                        buttonRelease,
+                        buttonPressed,
+                        () => Letters1++),
+                    new Button(new Point(1,1),
+                        new Rectangle(150,150,50,50),
+                        buttonRelease,
+                        buttonPressed,
+                        () => Letters1--),
+                    // Letter2
+                    new Button(new Point(2,0),
+                        new Rectangle(150,150,50,50),
+                        buttonRelease,
+                        buttonPressed,
+                        () => Letters2++),
+                    new Button(new Point(2,1),
+                        new Rectangle(150,150,50,50),
+                        buttonRelease,
+                        buttonPressed,
+                        () => Letters2--),
+                    // Letter3
+                    new Button(new Point(3,0),
+                        new Rectangle(150,150,50,50),
+                        buttonRelease,
+                        buttonPressed,
+                        () => Letters3++),
+                    new Button(new Point(3,1),
+                        new Rectangle(150,150,50,50),
+                        buttonRelease,
+                        buttonPressed,
+                        () => Letters3--),
                 },
                 new MenuControlScheme(Keys.W, Keys.S, Keys.A, Keys.D, Keys.Enter),
                 viewport);
             _viewport = viewport;
-            scoreFont = content.Load<SpriteFont>(@"Fonts/DebugFont"); // TODO: Add high score font
+            _scoreFont = content.Load<SpriteFont>(@"Fonts/Debug"); // TODO: Add high score font
         }
 
         public static void Update()
         {
-            menu.Update();
+            _menu.Update();
         }
 
         /// <summary>
@@ -162,52 +196,53 @@ namespace AdventuresOfAlfloog
         public static void SaveHighScore(HighScoreEntry newScore)
         {
             // If there are already 10 scores
-            if (currentData.CampaingScores.Count >= 5)
+            if (currentData.ScoreEntries.Count >= 5)
             {
                 // And newScore is smaller than the smallest score
-                if (newScore.score < currentData.CampaingScores[4].score)
+                if (newScore.score < currentData.ScoreEntries[4].score)
                 {
                     // Do not add score
                     return;
                 }
             }
             // Add newScore
-            currentData.CampaingScores.Add(newScore);
+            currentData.ScoreEntries.Add(newScore);
             // sort scores
-            for (int write = 0; write < currentData.CampaingScores.Count; write++)
+            for (int write = 0; write < currentData.ScoreEntries.Count; write++)
             {
-                for (int sort = 0; sort < currentData.CampaingScores.Count - 1; sort++)
+                for (int sort = 0; sort < currentData.ScoreEntries.Count - 1; sort++)
                 {
-                    if (currentData.CampaingScores[sort].score > currentData.CampaingScores[sort + 1].score)
+                    if (currentData.ScoreEntries[sort].score > currentData.ScoreEntries[sort + 1].score)
                     {
-                        HighScoreEntry temp = currentData.CampaingScores[sort + 1];
-                        currentData.CampaingScores[sort + 1] = currentData.CampaingScores[sort];
-                        currentData.CampaingScores[sort] = temp;
+                        HighScoreEntry temp = currentData.ScoreEntries[sort + 1];
+                        currentData.ScoreEntries[sort + 1] = currentData.ScoreEntries[sort];
+                        currentData.ScoreEntries[sort] = temp;
                     }
                 }
             }
 
-            currentData.CampaingScores.Reverse();
+            currentData.ScoreEntries.Reverse();
             DoSave(currentData, FileName);
         }
 
         public static void Draw(SpriteBatch spriteBatch)
         {
-            menu.Draw(spriteBatch);
+            _menu.Draw(spriteBatch);
 
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(scoreFont, showScoreState == ShowScoreStates.Campaing ? "Campaing High Scores" : "Endless High Scores", new Vector2(_viewport.Width / 2f, _viewport.Height / 10f), Color.Black);
+            spriteBatch.DrawString(_scoreFont, "High Scores", new Vector2(_viewport.Width / 2f, _viewport.Height / 10f), Color.Black);
 
             // Draw score
-            for (int i = 0; i < currentData.CampaingScores.Count; i++ )
+            for (int i = 0; i < currentData.ScoreEntries.Count; i++)
             {
                 // Draw Name
-                spriteBatch.DrawString(scoreFont, showScoreState == ShowScoreStates.Campaing ? currentData.CampaingScores[i].name : currentData.EndlessScores[i].name, new Vector2(_viewport.Width / 2f - 100, i * 60 + 180), Color.Black);
+                spriteBatch.DrawString(_scoreFont, currentData.ScoreEntries[i].name, new Vector2(_viewport.Width / 2f - 100, i * 60 + 180), Color.Black);
                 // Draw score
-                spriteBatch.DrawString(scoreFont, showScoreState == ShowScoreStates.Campaing ? currentData.CampaingScores[i].score.ToString() : currentData.EndlessScores[i].score.ToString(), new Vector2(_viewport.Width / 2f + 100, i * 60 + 180), Color.Black);
+                spriteBatch.DrawString(_scoreFont, currentData.ScoreEntries[i].score.ToString(), new Vector2(_viewport.Width / 2f + 100, i * 60 + 180), Color.Black);
             }
             spriteBatch.End();
         }
     }
 }
+

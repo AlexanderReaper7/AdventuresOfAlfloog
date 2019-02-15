@@ -19,6 +19,16 @@ namespace AdventuresOfAlfloog
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        public enum GameStates
+        {
+            InGame,
+            MainMenu,
+            HighScore,
+            Credits,
+            Exit
+        }
+
+        public static GameStates GameState = GameStates.MainMenu;
 #if DEBUG
         public static SpriteFont DebugFont;
 #endif
@@ -37,6 +47,8 @@ namespace AdventuresOfAlfloog
         /// </summary>
         protected override void Initialize()
         {
+            HighScore.Initilize();
+
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
             graphics.PreferMultiSampling = true;
@@ -58,9 +70,10 @@ namespace AdventuresOfAlfloog
 #if DEBUG
             DebugFont = Content.Load<SpriteFont>(@"Fonts/Debug");
 #endif
-
+            Main.LoadContent(Content, GraphicsDevice.Viewport);
             InGame.LoadContent(Content, GraphicsDevice.Viewport);
-
+            HighScore.LoadContent(Content, GraphicsDevice.Viewport);
+            Credits.LoadContent(Content, GraphicsDevice.Viewport);
         }
 
         /// <summary>
@@ -88,6 +101,30 @@ namespace AdventuresOfAlfloog
                 graphics.ApplyChanges();
             }
 
+            switch (GameState)
+            {
+                case GameStates.InGame:
+                    if(IsMouseVisible) IsMouseVisible = !IsMouseVisible; // set mouse not visible
+                    InGame.Update(gameTime);
+                    break;
+                case GameStates.MainMenu:
+                    if (!IsMouseVisible) IsMouseVisible = !IsMouseVisible; // set mouse visible
+                    Main.Update();
+                    break;
+                case GameStates.HighScore:
+                    if (!IsMouseVisible) IsMouseVisible = !IsMouseVisible; // set mouse visible
+                    HighScore.Update();
+                    break;
+                case GameStates.Credits:
+                    if (!IsMouseVisible) IsMouseVisible = !IsMouseVisible; // set mouse visible
+                    Credits.Update(gameTime);
+                    break;
+                case GameStates.Exit:
+                    this.Exit();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             InGame.Update(gameTime);
 
             base.Update(gameTime);
@@ -99,9 +136,27 @@ namespace AdventuresOfAlfloog
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            
             GraphicsDevice.Clear(Color.Black);
-
-            InGame.Draw(spriteBatch);
+            switch (GameState)
+            {
+                case GameStates.InGame:
+                    InGame.Draw(spriteBatch);
+                    break;
+                case GameStates.MainMenu:
+                    Main.Draw(spriteBatch);
+                    break;
+                case GameStates.HighScore:
+                    HighScore.Draw(spriteBatch);
+                    break;
+                case GameStates.Credits:
+                    Credits.Draw(spriteBatch);
+                    break;
+                case GameStates.Exit:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             base.Draw(gameTime);
         }

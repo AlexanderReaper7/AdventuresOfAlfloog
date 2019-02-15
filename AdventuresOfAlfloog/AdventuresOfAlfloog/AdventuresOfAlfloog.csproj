@@ -75,11 +75,14 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CollidableObject.cs" />
+    <Compile Include="Credits.cs" />
+    <Compile Include="Enemies.cs" />
     <Compile Include="Enemy.cs" />
-    <None Include="HighScore.cs" />
+    <Compile Include="HighScore.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="InGame.cs" />
     <Compile Include="Level.cs" />
-    <None Include="MainMenu.cs" />
+    <Compile Include="MainMenu.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="ParallaxElement.cs" />
     <Compile Include="Player.cs" />

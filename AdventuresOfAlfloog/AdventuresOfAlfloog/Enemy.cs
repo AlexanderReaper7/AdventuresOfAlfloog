@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace AdventuresOfAlfloog
 {
-    public class Enemy
+    public abstract class Enemy
     {
         public CollidableObject CollidableObject
         {
@@ -33,13 +33,14 @@ namespace AdventuresOfAlfloog
         /// <summary>
         /// movement speed in pixels per millisecond
         /// </summary>
-        private float speed;
+        private float _walkSpeed;
 
-        public Enemy(CollidableObject collidableObject, List<Animation> animations, float speed)
+        public Enemy(CollidableObject collidableObject, AnimationSet animationSet, float walkSpeed)
         {
             CollidableObject = collidableObject;
+            AnimationSet = animationSet;
             //animations[0].SetToFrame(ref CollidableObject.SourceRectangle, 0);
-            this.speed = speed;
+            _walkSpeed = walkSpeed;
         }
 
 
@@ -53,7 +54,7 @@ namespace AdventuresOfAlfloog
             // Reset displacement
             Vector2 displacement = Vector2.Zero;
 
-            // TODO: implement MovementAi
+            
 
             AddToPosition(displacement);
         }
